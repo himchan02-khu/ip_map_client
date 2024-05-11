@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'screen/my_ip.dart';
+import 'screen/ip_to_ip_cal.dart';
+import 'screen/Input_two.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,6 +45,18 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Image.asset('assets/images/logo.jpeg'),
+            ),
+            SizedBox(
+              height: 20,
+            ),
             Row(
               children: <Widget>[
                 Expanded(
@@ -67,31 +81,47 @@ class MyHomePage extends StatelessWidget {
                   onPressed: () {
                     String query = _searchController.text;
                     _sendSearchQuery(query);
+                    // Navigator.push(
+                    //   context, MaterialPageRoute(builder: (context => MapScreen(response)));
+                    // )
                   },
                 ),
               ],
             ),
             SizedBox(
-                height:
-                    20), // Add some spacing between the text field and button
+              height: 20,
+            ),
             ElevatedButton(
               onPressed: () {
                 // Add your function to check IP address here
                 print('Button clicked: Check my IP address');
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => My_ip()));
+                  context,
+                  MaterialPageRoute(builder: (context) => My_ip()),
+                );
               },
               child: Text('Check my IP address'),
             ),
             SizedBox(
-                height:
-                    20), // Add some spacing between the text field and button
+              height: 20,
+            ),
             ElevatedButton(
               onPressed: () {
                 // Add your function to check IP address here
                 print('Button clicked: address to address');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => InputTwoIP()),
+                );
               },
               child: Text('Check address to address'),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              'By Himchan02',
+              style: TextStyle(fontSize: 16),
             ),
           ],
         ),

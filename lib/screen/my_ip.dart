@@ -3,9 +3,25 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../widget/back_button.dart';
 
 void main() {
-  runApp(My_ip());
+  runApp(MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(
+        title: Text('Previous Page'), // Title of the app bar
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_back), // Icon for navigating back
+            onPressed: () {
+              // Navigation logic to go back
+            },
+          ),
+        ],
+      ),
+      body: My_ip(), // Display the InputTwoIP widget
+    ),
+  ));
 }
 
 class My_ip extends StatelessWidget {
@@ -73,36 +89,21 @@ class _MyHomePageState extends State<Myippage> {
 
   Future<void> _externalIpAddress() async {
     try {
-      // Execute the command 'curl ifconfig.me' and capture its output
-      var processResult = await Process.run('curl', ['ifconfig.me']);
+      // Make an HTTP GET request to a service that provides the public IP address
+      var response = await http.get(Uri.parse('https://api.ip.pe.kr/json'));
 
-      // Check if the command was executed successfully
-      if (processResult.exitCode == 0) {
-        // Extract the output of the command
-        this.External_ipAddress = processResult.stdout.toString().trim();
-
-        // Print the IP address
-        print('Your external IP address is: ${this.External_ipAddress}');
+      // Parse the JSON response
+      if (response.statusCode == 200) {
+        final jsonData = response.body;
+        final ipData = json.decode(jsonData);
+        setState(() {
+          this.External_ipAddress = ipData['ip'];
+          _sendSearchQuery(this.External_ipAddress);
+          print('my external ip address : ${this.External_ipAddress}');
+        });
       } else {
-        // Print an error message if the command failed
-        print('Failed to execute the command: ${processResult.stderr}');
         throw Exception('Failed to load IP address');
       }
-      // // Make an HTTP GET request to a service that provides the public IP address
-      // var response = await http.get(Uri.parse('https://api.ip.pe.kr/json/'));
-
-      // // Parse the JSON response
-      // if (response.statusCode == 200) {
-      //   final jsonData = response.body;
-      //   final ipData = json.decode(jsonData);
-      //   setState(() {
-      //     this.External_ipAddress = ipData['ip'];
-      //     _sendSearchQuery(this.External_ipAddress);
-      //     print('my external ip address : ${this.External_ipAddress}');
-      //   });
-      // } else {
-      //   throw Exception('Failed to load IP address');
-      // }
     } catch (e) {
       setState(() {
         this.External_ipAddress = 'Error: $e';
@@ -113,9 +114,12 @@ class _MyHomePageState extends State<Myippage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('IP Check'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('IP Check'),
+      //   // leading: const BackBtn(),
+      //   // backgroundColor: Colors.transparent,
+      //   // flexibleSpace: const SizedBox.shrink(),
+      // ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
