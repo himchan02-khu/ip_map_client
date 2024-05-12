@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ip_map_instance/screen/IP_show.dart';
 import 'screen/my_ip.dart';
-import 'screen/Two_ip_cal.dart';
 import 'screen/Input_two.dart';
 import 'dart:convert';
-import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -38,6 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
     String serverUrl = 'http://localhost:4242/search?ip=${query}';
 
     var response = await http.get(Uri.parse(serverUrl));
+
+    print('serverUrl: ${serverUrl}');
 
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');

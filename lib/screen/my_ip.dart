@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../widget/back_button.dart';
 import 'IP_show.dart';
 
 void main() {
@@ -94,12 +93,14 @@ class _MyHomePageState extends State<Myippage> {
     String serverUrl = 'http://localhost:4242/search?ip=${query}';
 
     var response = await http.get(Uri.parse(serverUrl));
-    setState(() {
-      responseData = jsonDecode(response.body);
-    });
+
+    print('serverUrl: ${serverUrl}');
 
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
+    setState(() {
+      responseData = jsonDecode(response.body);
+    });
   }
 
   Future<void> _getIpAddress() async {
