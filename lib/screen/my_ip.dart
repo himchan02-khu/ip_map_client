@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../widget/back_button.dart';
+import 'IP_show.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -24,6 +24,31 @@ void main() {
   ));
 }
 
+// class My_ip extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'In/External IP Check',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: Text('내 IP 주소'), // Title of the app bar
+//           actions: [
+//             IconButton(
+//               icon: Icon(Icons.arrow_back), // Icon for navigating back
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//             ),
+//           ],
+//         ),
+//         body: Myippage(), // Display the InputTwoIP widget
+//       ),
+//     );
+//   }
+// }
 class My_ip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -32,7 +57,18 @@ class My_ip extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Myippage(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('내 IP 주소'), // Title of the app bar
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back), // Icon for navigating back
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
+        body: Myippage(), // Display the InputTwoIP widget
+      ),
     );
   }
 }
@@ -45,6 +81,7 @@ class Myippage extends StatefulWidget {
 class _MyHomePageState extends State<Myippage> {
   String Internal_ipAddress = 'Loading...';
   String External_ipAddress = 'Loading...';
+  late Map<String, dynamic> responseData = {}; // 검색어를 입력 받기 위한 컨트롤러
 
   @override
   void initState() {
@@ -57,6 +94,9 @@ class _MyHomePageState extends State<Myippage> {
     String serverUrl = 'http://localhost:4242/search?ip=${query}';
 
     var response = await http.get(Uri.parse(serverUrl));
+    setState(() {
+      responseData = jsonDecode(response.body);
+    });
 
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
@@ -72,7 +112,6 @@ class _MyHomePageState extends State<Myippage> {
       if (interfaces.isNotEmpty) {
         setState(() {
           this.Internal_ipAddress = interfaces.first.addresses.first.address;
-          _sendSearchQuery(this.Internal_ipAddress);
           print('my internal ip address : ${this.Internal_ipAddress}');
         });
       } else {
@@ -141,6 +180,18 @@ class _MyHomePageState extends State<Myippage> {
             Text(
               External_ipAddress,
               style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => IPShow(responseData),
+                  ),
+                );
+              },
+              child: Text('내 외부 IP 주소 정보 확인하기'),
             ),
           ],
         ),

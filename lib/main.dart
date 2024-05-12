@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ip_map_instance/screen/IP_show.dart';
 import 'screen/my_ip.dart';
-import 'screen/ip_to_ip_cal.dart';
+import 'screen/Two_ip_cal.dart';
 import 'screen/Input_two.dart';
+import 'dart:convert';
+import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -22,17 +25,25 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  TextEditingController _searchController =
-      TextEditingController(); // 검색어를 입력 받기 위한 컨트롤러
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-  void _sendSearchQuery(String query) async {
+class _MyHomePageState extends State<MyHomePage> {
+  TextEditingController _searchController = TextEditingController();
+  late Map<String, dynamic> responseData = {}; // 검색어를 입력 받기 위한 컨트롤러
+
+  Future<void> _sendSearchQuery(String query) async {
     String serverUrl = 'http://localhost:4242/search?ip=${query}';
 
     var response = await http.get(Uri.parse(serverUrl));
 
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
+    setState(() {
+      responseData = jsonDecode(response.body);
+    });
   }
 
   @override
@@ -78,12 +89,13 @@ class MyHomePage extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.search),
-                  onPressed: () {
+                  onPressed: () async {
                     String query = _searchController.text;
-                    _sendSearchQuery(query);
-                    // Navigator.push(
-                    //   context, MaterialPageRoute(builder: (context => MapScreen(response)));
-                    // )
+                    await _sendSearchQuery(query);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => IPShow(responseData)));
                   },
                 ),
               ],
