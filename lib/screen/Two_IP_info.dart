@@ -1,11 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import './MapDistance.dart';
 
-class TwoIPInfo extends StatelessWidget {
+class TwoIPInfo extends StatefulWidget {
   final Map<String, dynamic> responseData1;
   final Map<String, dynamic> responseData2;
 
   TwoIPInfo(this.responseData1, this.responseData2);
+
+  @override
+  _TwoIPInfoState createState() => _TwoIPInfoState();
+}
+
+class _TwoIPInfoState extends State<TwoIPInfo> {
+  String koreanAddress1 = '조회 불가';
+  String koreanAddress2 = '조회 불가';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchKoreanAddresses();
+  }
+
+  Future<void> fetchKoreanAddresses() async {
+    if (widget.responseData1['locate'] != null) {
+      String address1 =
+          await fetchKoreanAddress(widget.responseData1['locate']);
+      setState(() {
+        koreanAddress1 = address1;
+      });
+    }
+
+    if (widget.responseData2['locate'] != null) {
+      String address2 =
+          await fetchKoreanAddress(widget.responseData2['locate']);
+      setState(() {
+        koreanAddress2 = address2;
+      });
+    }
+  }
+
+  Future<String> fetchKoreanAddress(String locate) async {
+    final apiKey = 'AIzaSyA70KzHVrptd0-9lUE2uynA8CdKA2wqUpw';
+    final url =
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$locate&language=ko&key=$apiKey';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['results'].isNotEmpty) {
+        return data['results'][0]['formatted_address'];
+      } else {
+        return '주소를 찾을 수 없습니다';
+      }
+    } else {
+      throw Exception('Failed to load address');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +72,18 @@ class TwoIPInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('IP Address 1',
+                Text('IP Info 1',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                _buildInfoItem('IP', responseData1['ip']),
-                _buildInfoItem('City', responseData1['city']),
-                _buildInfoItem('Region', responseData1['region']),
-                _buildInfoItem('Country', responseData1['country']),
-                _buildInfoItem('Address', responseData1['address']),
-                _buildInfoItem('Telecom', responseData1['telecom']),
-                _buildInfoItem('Postal', responseData1['postal']),
-                _buildInfoItem('Time', responseData1['time']),
+                _buildInfoItem('IP', widget.responseData1['ip']),
+                _buildInfoItem('City', widget.responseData1['city']),
+                _buildInfoItem('Region', widget.responseData1['region']),
+                _buildInfoItem('Country', widget.responseData1['country']),
+                _buildInfoItem('Locate', widget.responseData1['locate']),
+                _buildInfoItem('Telecom', widget.responseData1['telecom']),
+                _buildInfoItem('Postal', widget.responseData1['postal']),
+                _buildInfoItem('Time', widget.responseData1['time']),
+                _buildInfoItem('Address', koreanAddress1),
               ],
             ),
           ),
@@ -40,33 +93,38 @@ class TwoIPInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('IP Address 2',
+                Text('IP Info 2',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                _buildInfoItem('IP', responseData2['ip']),
-                _buildInfoItem('City', responseData2['city']),
-                _buildInfoItem('Region', responseData2['region']),
-                _buildInfoItem('Country', responseData2['country']),
-                _buildInfoItem('Address', responseData2['address']),
-                _buildInfoItem('Telecom', responseData2['telecom']),
-                _buildInfoItem('Postal', responseData2['postal']),
-                _buildInfoItem('Time', responseData2['time']),
+                _buildInfoItem('IP', widget.responseData2['ip']),
+                _buildInfoItem('City', widget.responseData2['city']),
+                _buildInfoItem('Region', widget.responseData2['region']),
+                _buildInfoItem('Country', widget.responseData2['country']),
+                _buildInfoItem('Locate', widget.responseData2['locate']),
+                _buildInfoItem('Telecom', widget.responseData2['telecom']),
+                _buildInfoItem('Postal', widget.responseData2['postal']),
+                _buildInfoItem('Time', widget.responseData2['time']),
+                _buildInfoItem('Address', koreanAddress2),
               ],
             ),
           ),
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              if (responseData1['address'] != null &&
-                  responseData2['address'] != null) {
+              if (widget.responseData1['locate'] != null &&
+                  widget.responseData2['locate'] != null) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => MapDistance(
-                      double.parse(responseData1['address'].split(',')[0]),
-                      double.parse(responseData1['address'].split(',')[1]),
-                      double.parse(responseData2['address'].split(',')[0]),
-                      double.parse(responseData2['address'].split(',')[1]),
+                      double.parse(
+                          widget.responseData1['locate'].split(',')[0]),
+                      double.parse(
+                          widget.responseData1['locate'].split(',')[1]),
+                      double.parse(
+                          widget.responseData2['locate'].split(',')[0]),
+                      double.parse(
+                          widget.responseData2['locate'].split(',')[1]),
                     ),
                   ),
                 );
@@ -108,9 +166,19 @@ class TwoIPInfo extends StatelessWidget {
             '$title:',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          Text(
-            value != null ? value.toString() : '조회 불가',
-            style: TextStyle(color: value != null ? Colors.black : Colors.red),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                value != null ? value.toString() : '조회 불가',
+                style:
+                    TextStyle(color: value != null ? Colors.black : Colors.red),
+                textAlign: TextAlign.right,
+                softWrap: true,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ),
         ],
       ),

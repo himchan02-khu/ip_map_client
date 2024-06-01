@@ -115,6 +115,9 @@ class _MyHomePageState extends State<InputTwoIP> {
                   Map<String, dynamic> responseData1 = await _fetchIPInfo(ip1);
                   Map<String, dynamic> responseData2 = await _fetchIPInfo(ip2);
 
+                  print('Response for IP1: $responseData1');
+                  print('Response for IP2: $responseData2');
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(

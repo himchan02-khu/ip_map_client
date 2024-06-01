@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'dart:math';
 
 class MapDistance extends StatefulWidget {
@@ -16,11 +18,14 @@ class MapDistance extends StatefulWidget {
 
 class _MapScreenState extends State<MapDistance> {
   GoogleMapController? mapController;
+  String address1 = '';
+  String address2 = '';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) => _setMapFitToTour());
+    fetchAddresses();
   }
 
   @override
@@ -49,8 +54,18 @@ class _MapScreenState extends State<MapDistance> {
               });
             },
             markers: {
-              Marker(markerId: MarkerId('Location1'), position: location1),
-              Marker(markerId: MarkerId('Location2'), position: location2),
+              Marker(
+                markerId: MarkerId('Location1'),
+                position: location1,
+                onTap: () => _showAddressInfo(
+                    context, 'Location 1', address1, location1),
+              ),
+              Marker(
+                markerId: MarkerId('Location2'),
+                position: location2,
+                onTap: () => _showAddressInfo(
+                    context, 'Location 2', address2, location2),
+              ),
             },
             polylines: {
               Polyline(
@@ -119,5 +134,58 @@ class _MapScreenState extends State<MapDistance> {
 
   double _degreesToRadians(double degrees) {
     return degrees * pi / 180;
+  }
+
+  Future<void> fetchAddresses() async {
+    address1 = await fetchAddress(widget.lat1, widget.lon1);
+    address2 = await fetchAddress(widget.lat2, widget.lon2);
+    setState(() {});
+  }
+
+  Future<String> fetchAddress(double lat, double lon) async {
+    final apiKey = 'AIzaSyA70KzHVrptd0-9lUE2uynA8CdKA2wqUpw';
+    final url =
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lon&language=ko&key=$apiKey';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['results'].isNotEmpty) {
+        return data['results'][0]['formatted_address'];
+      } else {
+        return '주소를 찾을 수 없습니다';
+      }
+    } else {
+      throw Exception('Failed to load address');
+    }
+  }
+
+  void _showAddressInfo(
+      BuildContext context, String title, String address, LatLng location) {
+    mapController!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: location,
+      zoom: 15.0,
+    )));
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                title,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(address),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
