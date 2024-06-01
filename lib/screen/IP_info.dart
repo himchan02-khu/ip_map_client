@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'google_map.dart';
+import './Google_Map.dart';
 
 class IPShow extends StatelessWidget {
   final Map<String, dynamic> responseData;
@@ -28,14 +28,35 @@ class IPShow extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
+                if (responseData['address'] != null) {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => MapScreen(
                         double.parse(responseData['address'].split(',')[0]),
                         double.parse(responseData['address'].split(',')[1]),
                       ),
-                    ));
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('오류'),
+                        content: Text('위치 조회가 되지 않는 IP입니다'),
+                        actions: [
+                          TextButton(
+                            child: Text('확인'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
               },
               child: Text('View on Map'),
             ),
@@ -64,9 +85,3 @@ class IPShow extends StatelessWidget {
     );
   }
 }
-
-// void main() {
-//   runApp(MaterialApp(
-//     home: IPShow(),
-//   ));
-// }

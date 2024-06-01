@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ip_map_instance/screen/Two_IP_info.dart';
 import 'dart:convert';
 
 void main() {
@@ -17,12 +18,11 @@ class _MyHomePageState extends State<InputTwoIP> {
   String External_ipAddress = 'Loading...';
   TextEditingController controller1 = TextEditingController();
   TextEditingController controller2 = TextEditingController();
+
   Future<void> _externalIpAddress() async {
     try {
-      // Make an HTTP GET request to a service that provides the public IP address
       var response = await http.get(Uri.parse('https://api.ip.pe.kr/json'));
 
-      // Parse the JSON response
       if (response.statusCode == 200) {
         final jsonData = response.body;
         final ipData = json.decode(jsonData);
@@ -37,6 +37,17 @@ class _MyHomePageState extends State<InputTwoIP> {
       setState(() {
         this.External_ipAddress = 'Error: $e';
       });
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchIPInfo(String ip) async {
+    String serverUrl = 'http://localhost:4242/search?ip=${ip}';
+    var response = await http.get(Uri.parse(serverUrl));
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load IP info');
     }
   }
 
@@ -66,7 +77,6 @@ class _MyHomePageState extends State<InputTwoIP> {
                 ElevatedButton(
                   onPressed: () async {
                     await _externalIpAddress();
-                    // Add functionality to get 'My external ip'
                     controller1.text = External_ipAddress;
                   },
                   child: Text('My external ip'),
@@ -89,7 +99,6 @@ class _MyHomePageState extends State<InputTwoIP> {
                 ElevatedButton(
                   onPressed: () async {
                     await _externalIpAddress();
-                    // Add functionality to get 'My external ip'
                     controller2.text = External_ipAddress;
                   },
                   child: Text('My external ip'),
@@ -98,8 +107,29 @@ class _MyHomePageState extends State<InputTwoIP> {
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () {
-                // Add functionality for moving to the next step
+              onPressed: () async {
+                String ip1 = controller1.text;
+                String ip2 = controller2.text;
+
+                try {
+                  Map<String, dynamic> responseData1 = await _fetchIPInfo(ip1);
+                  Map<String, dynamic> responseData2 = await _fetchIPInfo(ip2);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          TwoIPInfo(responseData1, responseData2),
+                    ),
+                  );
+                } catch (e) {
+                  print('Error: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to fetch IP information.'),
+                    ),
+                  );
+                }
               },
               child: Text('Search'),
             ),

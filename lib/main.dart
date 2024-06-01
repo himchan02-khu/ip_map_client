@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:ip_map_instance/screen/IP_show.dart';
-import 'screen/my_ip.dart';
+import 'screen/IP_info.dart';
+import 'screen/My_IP.dart';
 import 'screen/Input_two.dart';
 import 'dart:convert';
 
