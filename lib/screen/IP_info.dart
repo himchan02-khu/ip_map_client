@@ -2,29 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import './Google_Map.dart';
+import '../api/api.dart'; // api.dart 파일을 가져옵니다
 
 class IPShow extends StatelessWidget {
   final Map<String, dynamic> responseData;
 
   IPShow(this.responseData);
-
-  Future<String> fetchKoreanAddress(String locate) async {
-    final apiKey = 'AIzaSyA70KzHVrptd0-9lUE2uynA8CdKA2wqUpw';
-    final url =
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$locate&language=ko&key=$apiKey';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['results'].isNotEmpty) {
-        return data['results'][0]['formatted_address'];
-      } else {
-        return '주소를 찾을 수 없습니다';
-      }
-    } else {
-      throw Exception('Failed to load address');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +15,13 @@ class IPShow extends StatelessWidget {
       appBar: AppBar(
         title: Text('IP Information'),
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<String>(
         future: responseData['locate'] != null
-            ? fetchKoreanAddress(responseData['locate'])
-            : null,
+            ? ApiHelper.fetchAddress(
+                double.parse(responseData['locate'].split(',')[0]),
+                double.parse(responseData['locate'].split(',')[1]),
+              )
+            : Future.value(null),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -56,7 +42,7 @@ class IPShow extends StatelessWidget {
                   _buildInfoItem('Telecom', responseData['telecom']),
                   _buildInfoItem('Postal', responseData['postal']),
                   _buildInfoItem('Time', responseData['time']),
-                  _buildInfoItem('상세주소', koreanAddress),
+                  _buildInfoItem('Address', koreanAddress),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
@@ -118,8 +104,6 @@ class IPShow extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 value != null ? value.toString() : '조회 불가',
-                // style:
-                //     TextStyle(color: value != null ? Colors.black : Colors.red),
                 textAlign: TextAlign.right,
                 softWrap: true,
                 maxLines: 2,

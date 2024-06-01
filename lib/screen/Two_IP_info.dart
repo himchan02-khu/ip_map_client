@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import './MapDistance.dart';
+import '../api/api.dart'; // api.dart 파일을 가져옵니다
 
 class TwoIPInfo extends StatefulWidget {
   final Map<String, dynamic> responseData1;
@@ -24,38 +23,29 @@ class _TwoIPInfoState extends State<TwoIPInfo> {
   }
 
   Future<void> fetchKoreanAddresses() async {
-    if (widget.responseData1['locate'] != null) {
-      String address1 =
-          await fetchKoreanAddress(widget.responseData1['locate']);
+    if (widget.responseData1['locate'] != null &&
+        widget.responseData2['locate'] != null) {
+      final addresses = await ApiHelper.fetchAddresses(
+          double.parse(widget.responseData1['locate'].split(',')[0]),
+          double.parse(widget.responseData1['locate'].split(',')[1]),
+          double.parse(widget.responseData2['locate'].split(',')[0]),
+          double.parse(widget.responseData2['locate'].split(',')[1]));
       setState(() {
-        koreanAddress1 = address1;
+        koreanAddress1 = addresses['address1']!;
+        koreanAddress2 = addresses['address2']!;
       });
-    }
-
-    if (widget.responseData2['locate'] != null) {
-      String address2 =
-          await fetchKoreanAddress(widget.responseData2['locate']);
-      setState(() {
-        koreanAddress2 = address2;
-      });
-    }
-  }
-
-  Future<String> fetchKoreanAddress(String locate) async {
-    final apiKey = 'AIzaSyA70KzHVrptd0-9lUE2uynA8CdKA2wqUpw';
-    final url =
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$locate&language=ko&key=$apiKey';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['results'].isNotEmpty) {
-        return data['results'][0]['formatted_address'];
-      } else {
-        return '주소를 찾을 수 없습니다';
-      }
     } else {
-      throw Exception('Failed to load address');
+      if (widget.responseData1['locate'] != null) {
+        koreanAddress1 = await ApiHelper.fetchAddress(
+            double.parse(widget.responseData1['locate'].split(',')[0]),
+            double.parse(widget.responseData1['locate'].split(',')[1]));
+      }
+      if (widget.responseData2['locate'] != null) {
+        koreanAddress2 = await ApiHelper.fetchAddress(
+            double.parse(widget.responseData2['locate'].split(',')[0]),
+            double.parse(widget.responseData2['locate'].split(',')[1]));
+      }
+      setState(() {});
     }
   }
 

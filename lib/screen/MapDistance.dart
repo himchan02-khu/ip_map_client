@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
+import '../api/api.dart';
 
 class MapDistance extends StatefulWidget {
   final double lat1;
@@ -137,27 +138,12 @@ class _MapScreenState extends State<MapDistance> {
   }
 
   Future<void> fetchAddresses() async {
-    address1 = await fetchAddress(widget.lat1, widget.lon1);
-    address2 = await fetchAddress(widget.lat2, widget.lon2);
-    setState(() {});
-  }
-
-  Future<String> fetchAddress(double lat, double lon) async {
-    final apiKey = 'AIzaSyA70KzHVrptd0-9lUE2uynA8CdKA2wqUpw';
-    final url =
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lon&language=ko&key=$apiKey';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['results'].isNotEmpty) {
-        return data['results'][0]['formatted_address'];
-      } else {
-        return '주소를 찾을 수 없습니다';
-      }
-    } else {
-      throw Exception('Failed to load address');
-    }
+    final addresses = await ApiHelper.fetchAddresses(
+        widget.lat1, widget.lon1, widget.lat2, widget.lon2);
+    setState(() {
+      address1 = addresses['address1']!;
+      address2 = addresses['address2']!;
+    });
   }
 
   void _showAddressInfo(
