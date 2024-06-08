@@ -15,7 +15,7 @@ class IPShow extends StatelessWidget {
         title: Text('IP Information'),
       ),
       body: FutureBuilder<String>(
-        future: ipInfo.locate != null
+        future: ipInfo.locate != '조회 불가'
             ? ApiHelper.fetchAddress(
                 double.parse(ipInfo.locate.split(',')[0]),
                 double.parse(ipInfo.locate.split(',')[1]),
@@ -46,7 +46,7 @@ class IPShow extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       print('Button clicked: View on Map');
-                      if (ipInfo.locate != null) {
+                      if (ipInfo.locate != '조회 불가') {
                         Navigator.push(
                           context,
                           MaterialPageRoute(

@@ -23,7 +23,7 @@ class _MapScreenState extends State<MapDistance> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) => _setMapFitToTour());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _setMapFitToTour());
     fetchAddresses();
   }
 

@@ -58,7 +58,7 @@ class TwoIPInfo extends StatelessWidget {
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              if (ipInfo1.locate != null && ipInfo2.locate != null) {
+              if (ipInfo1.locate != '조회 불가' && ipInfo2.locate != '조회 불가') {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
