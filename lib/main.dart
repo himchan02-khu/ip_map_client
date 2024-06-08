@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'screen/IP_info.dart';
-import 'screen/My_IP.dart';
-import 'screen/Input_two.dart';
-import 'dart:convert';
+import 'package:ip_map_instance/models/IP_Info.dart';
+import 'screen/One_IP/IP_display.dart';
+import 'screen/One_IP/My_IP.dart';
+import 'screen/Two_IP/Input_two.dart';
+import 'models/IP_Info.dart';
+import 'api/api.dart'; // Import the ApiHelper class
 
 void main() {
   runApp(const MyApp());
@@ -30,20 +31,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController _searchController = TextEditingController();
-  late Map<String, dynamic> responseData = {}; // 검색어를 입력 받기 위한 컨트롤러
+  late IpInfo responseData; // 검색어를 입력 받기 위한 컨트롤러
 
   Future<void> _sendSearchQuery(String query) async {
-    String serverUrl = 'http://localhost:4242/search?ip=${query}';
-
-    var response = await http.get(Uri.parse(serverUrl));
-
-    print('serverUrl: ${serverUrl}');
-
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    setState(() {
-      responseData = jsonDecode(response.body);
-    });
+    try {
+      IpInfo response = await ApiHelper.sendIP(query);
+      setState(() {
+        responseData = response;
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   @override
@@ -90,8 +88,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 IconButton(
                   icon: Icon(Icons.search),
                   onPressed: () async {
+                    print('Button Pressed : IP Search');
                     String query = _searchController.text;
                     await _sendSearchQuery(query);
+                    // print('responseData : ${responseData.}');
                     Navigator.push(
                         context,
                         MaterialPageRoute(

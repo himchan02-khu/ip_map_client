@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:ip_map_instance/screen/Two_IP_info.dart';
+import '../../api/api.dart';
+import 'Two_IP_display.dart';
 import 'dart:convert';
+import '../../models/IP_Info.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -37,17 +39,6 @@ class _MyHomePageState extends State<InputTwoIP> {
       setState(() {
         this.External_ipAddress = 'Error: $e';
       });
-    }
-  }
-
-  Future<Map<String, dynamic>> _fetchIPInfo(String ip) async {
-    String serverUrl = 'http://localhost:4242/search?ip=${ip}';
-    var response = await http.get(Uri.parse(serverUrl));
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load IP info');
     }
   }
 
@@ -108,16 +99,13 @@ class _MyHomePageState extends State<InputTwoIP> {
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () async {
+                print('Button clicked: Two IP Info Search');
                 String ip1 = controller1.text;
                 String ip2 = controller2.text;
 
                 try {
-                  Map<String, dynamic> responseData1 = await _fetchIPInfo(ip1);
-                  Map<String, dynamic> responseData2 = await _fetchIPInfo(ip2);
-
-                  print('Response for IP1: $responseData1');
-                  print('Response for IP2: $responseData2');
-
+                  IpInfo responseData1 = await ApiHelper.sendIP(ip1);
+                  IpInfo responseData2 = await ApiHelper.sendIP(ip2);
                   Navigator.push(
                     context,
                     MaterialPageRoute(

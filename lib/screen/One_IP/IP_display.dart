@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import './Google_Map.dart';
-import '../api/api.dart'; // api.dart 파일을 가져옵니다
+import 'Google_Map.dart';
+import '../../api/api.dart';
+import '../../models/IP_Info.dart';
 
 class IPShow extends StatelessWidget {
-  final Map<String, dynamic> responseData;
+  final IpInfo ipInfo;
 
-  IPShow(this.responseData);
+  IPShow(this.ipInfo);
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +15,10 @@ class IPShow extends StatelessWidget {
         title: Text('IP Information'),
       ),
       body: FutureBuilder<String>(
-        future: responseData['locate'] != null
+        future: ipInfo.locate != null
             ? ApiHelper.fetchAddress(
-                double.parse(responseData['locate'].split(',')[0]),
-                double.parse(responseData['locate'].split(',')[1]),
+                double.parse(ipInfo.locate.split(',')[0]),
+                double.parse(ipInfo.locate.split(',')[1]),
               )
             : Future.value(null),
         builder: (context, snapshot) {
@@ -34,27 +33,26 @@ class IPShow extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildInfoItem('IP', responseData['ip']),
-                  _buildInfoItem('City', responseData['city']),
-                  _buildInfoItem('Region', responseData['region']),
-                  _buildInfoItem('Country', responseData['country']),
-                  _buildInfoItem('Locate', responseData['locate']),
-                  _buildInfoItem('Telecom', responseData['telecom']),
-                  _buildInfoItem('Postal', responseData['postal']),
-                  _buildInfoItem('Time', responseData['time']),
+                  _buildInfoItem('IP', ipInfo.ip),
+                  _buildInfoItem('City', ipInfo.city),
+                  _buildInfoItem('Region', ipInfo.region),
+                  _buildInfoItem('Country', ipInfo.country),
+                  _buildInfoItem('Locate', ipInfo.locate),
+                  _buildInfoItem('Telecom', ipInfo.telecom),
+                  _buildInfoItem('Postal', ipInfo.postal),
+                  _buildInfoItem('Time', ipInfo.time),
                   _buildInfoItem('Address', koreanAddress),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      if (responseData['locate'] != null) {
+                      print('Button clicked: View on Map');
+                      if (ipInfo.locate != null) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => MapScreen(
-                              double.parse(
-                                  responseData['locate'].split(',')[0]),
-                              double.parse(
-                                  responseData['locate'].split(',')[1]),
+                              double.parse(ipInfo.locate.split(',')[0]),
+                              double.parse(ipInfo.locate.split(',')[1]),
                             ),
                           ),
                         );

@@ -1,8 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import './IP_info.dart';
+import '../../api/api.dart';
+import 'IP_display.dart';
+import '../../models/IP_Info.dart';
+import 'dart:io';
 
 void main() {
   runApp(MaterialApp(
@@ -23,31 +25,6 @@ void main() {
   ));
 }
 
-// class My_ip extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'In/External IP Check',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: Scaffold(
-//         appBar: AppBar(
-//           title: Text('내 IP 주소'), // Title of the app bar
-//           actions: [
-//             IconButton(
-//               icon: Icon(Icons.arrow_back), // Icon for navigating back
-//               onPressed: () {
-//                 Navigator.of(context).pop();
-//               },
-//             ),
-//           ],
-//         ),
-//         body: Myippage(), // Display the InputTwoIP widget
-//       ),
-//     );
-//   }
-// }
 class My_ip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -80,27 +57,13 @@ class Myippage extends StatefulWidget {
 class _MyHomePageState extends State<Myippage> {
   String Internal_ipAddress = 'Loading...';
   String External_ipAddress = 'Loading...';
-  late Map<String, dynamic> responseData = {}; // 검색어를 입력 받기 위한 컨트롤러
+  late IpInfo responseData; // 검색어를 입력 받기 위한 컨트롤러
 
   @override
   void initState() {
     super.initState();
     _getIpAddress();
     _externalIpAddress();
-  }
-
-  void _sendSearchQuery(String query) async {
-    String serverUrl = 'http://localhost:4242/search?ip=${query}';
-
-    var response = await http.get(Uri.parse(serverUrl));
-
-    print('serverUrl: ${serverUrl}');
-
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    setState(() {
-      responseData = jsonDecode(response.body);
-    });
   }
 
   Future<void> _getIpAddress() async {
@@ -129,10 +92,8 @@ class _MyHomePageState extends State<Myippage> {
 
   Future<void> _externalIpAddress() async {
     try {
-      // Make an HTTP GET request to a service that provides the public IP address
       var response = await http.get(Uri.parse('https://api.ip.pe.kr/json'));
 
-      // Parse the JSON response
       if (response.statusCode == 200) {
         final jsonData = response.body;
         final ipData = json.decode(jsonData);
@@ -151,15 +112,20 @@ class _MyHomePageState extends State<Myippage> {
     }
   }
 
+  Future<void> _sendSearchQuery(String query) async {
+    try {
+      IpInfo response = await ApiHelper.sendIP(query);
+      setState(() {
+        responseData = response;
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('IP Check'),
-      //   // leading: const BackBtn(),
-      //   // backgroundColor: Colors.transparent,
-      //   // flexibleSpace: const SizedBox.shrink(),
-      // ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -185,6 +151,7 @@ class _MyHomePageState extends State<Myippage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                print('Button clicked: Check my IP Info');
                 Navigator.push(
                   context,
                   MaterialPageRoute(

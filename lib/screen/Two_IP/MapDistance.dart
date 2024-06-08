@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:math';
-import '../api/api.dart';
+import '../../api/api.dart';
 
 class MapDistance extends StatefulWidget {
   final double lat1;
