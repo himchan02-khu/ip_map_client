@@ -20,14 +20,14 @@ class IPShow extends StatelessWidget {
                 double.parse(ipInfo.locate.split(',')[0]),
                 double.parse(ipInfo.locate.split(',')[1]),
               )
-            : Future.value(null),
+            : Future.value('조회 불가'),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('주소를 가져오는데 실패했습니다'));
           } else {
-            String koreanAddress = snapshot.data ?? '조회 불가';
+            String detailAddress = snapshot.data ?? '조회 불가';
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -41,7 +41,7 @@ class IPShow extends StatelessWidget {
                   _buildInfoItem('Telecom', ipInfo.telecom),
                   _buildInfoItem('Postal', ipInfo.postal),
                   _buildInfoItem('Time', ipInfo.time),
-                  _buildInfoItem('Address', koreanAddress),
+                  _buildInfoItem('Detail Address', detailAddress),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {

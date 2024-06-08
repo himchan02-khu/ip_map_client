@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../api/api.dart';
-import 'IP_display.dart';
+import 'IP_Display.dart';
 import '../../models/IP_Info.dart';
 import 'dart:io';
 

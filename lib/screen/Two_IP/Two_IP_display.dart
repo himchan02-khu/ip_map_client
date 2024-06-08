@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/IP_Info.dart';
+import '../../api/api.dart';
 import './MapDistance.dart';
 
 class TwoIPInfo extends StatelessWidget {
@@ -17,43 +18,11 @@ class TwoIPInfo extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('IP Info 1',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                _buildInfoItem('IP', ipInfo1.ip),
-                _buildInfoItem('City', ipInfo1.city),
-                _buildInfoItem('Region', ipInfo1.region),
-                _buildInfoItem('Country', ipInfo1.country),
-                _buildInfoItem('Locate', ipInfo1.locate),
-                _buildInfoItem('Telecom', ipInfo1.telecom),
-                _buildInfoItem('Postal', ipInfo1.postal),
-                _buildInfoItem('Time', ipInfo1.time),
-              ],
-            ),
+            child: _buildIPInfo(ipInfo1),
           ),
           Divider(),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('IP Info 2',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                _buildInfoItem('IP', ipInfo2.ip),
-                _buildInfoItem('City', ipInfo2.city),
-                _buildInfoItem('Region', ipInfo2.region),
-                _buildInfoItem('Country', ipInfo2.country),
-                _buildInfoItem('Locate', ipInfo2.locate),
-                _buildInfoItem('Telecom', ipInfo2.telecom),
-                _buildInfoItem('Postal', ipInfo2.postal),
-                _buildInfoItem('Time', ipInfo2.time),
-              ],
-            ),
+            child: _buildIPInfo(ipInfo2),
           ),
           SizedBox(height: 20),
           ElevatedButton(
@@ -95,6 +64,43 @@ class TwoIPInfo extends StatelessWidget {
           SizedBox(height: 20),
         ],
       ),
+    );
+  }
+
+  Widget _buildIPInfo(IpInfo ipInfo) {
+    return FutureBuilder<String>(
+      future: ipInfo.locate == '조회 불가'
+          ? Future.value('조회 불가')
+          : ApiHelper.fetchAddress(
+              double.parse(ipInfo.locate.split(',')[0]),
+              double.parse(ipInfo.locate.split(',')[1]),
+            ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('주소를 가져오는데 실패했습니다'));
+        } else {
+          String detailAddress = snapshot.data ?? '조회 불가';
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('IP Info',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              _buildInfoItem('IP', ipInfo.ip),
+              _buildInfoItem('City', ipInfo.city),
+              _buildInfoItem('Region', ipInfo.region),
+              _buildInfoItem('Country', ipInfo.country),
+              _buildInfoItem('Locate', ipInfo.locate),
+              _buildInfoItem('Telecom', ipInfo.telecom),
+              _buildInfoItem('Postal', ipInfo.postal),
+              _buildInfoItem('Time', ipInfo.time),
+              _buildInfoItem('Detail Address', detailAddress),
+            ],
+          );
+        }
+      },
     );
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../api/api.dart';
-import 'Two_IP_display.dart';
+import 'Two_IP_Display.dart';
 import 'dart:convert';
 import '../../models/IP_Info.dart';
 
