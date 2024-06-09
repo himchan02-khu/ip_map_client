@@ -43,7 +43,7 @@ IP Map Server는 Node.js를 사용하여 개발된 서버 애플리케이션입�
     
     ```bash
     bashCopy code
-    git clone https://github.com/himchan02-khu/ip_map_client.git IP_Map_Client
+    git clone https://github.com/himchan02-khu/ip_map_client.git
     
     ```
     
@@ -51,7 +51,7 @@ IP Map Server는 Node.js를 사용하여 개발된 서버 애플리케이션입�
     
     ```bash
     bashCopy code
-    cd IP_Map_Client
+    cd ip_map_client
     flutter pub get
     
     ```
@@ -79,7 +79,7 @@ IP Map Server는 Node.js를 사용하여 개발된 서버 애플리케이션입�
     
     ```bash
     bashCopy code
-    git clone https://github.com/himchan02-khu/ip_map_server.git IP_Map_Server
+    git clone https://github.com/himchan02-khu/ip_map_server.git
     
     ```
     
@@ -87,7 +87,7 @@ IP Map Server는 Node.js를 사용하여 개발된 서버 애플리케이션입�
     
     ```bash
     bashCopy code
-    cd IP_Map_Server
+    cd ip_map_server
     npm install
     
     ```
