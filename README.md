@@ -121,7 +121,7 @@ lib
 |   |   |-- IP_Display.dart		// IP 주소의 정보를 보여주는 페이지
 |   |   |-- Google_Map.dart	// IP 주소의 위치를 지도 상에 마커로 표시해주는 페이지
 |   |-- Two_IP
-|   |   |-- Input_Two.dart		// 두 IP 주소를 입력할 수 있는 페이지 (클라이언트의 외부 IP도 버튼을 통해 입력 가능)
+|   |   |-- Input_Two.dart    // 두 IP 주소를 입력할 수 있는 페이지
 |   |   |-- Two_IP_Display.dart	// 입력 받은 두 IP의 정보를 서버로부터 받아오는 페이지
 |   |   |-- MapDistance.dart	// 두 IP 주소의 거리를 지도 상에 표현해주는 페이지
 |-- main.dart  // 앱의 root 파일
