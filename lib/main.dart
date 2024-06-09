@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('IP_map_distance'),
+        title: Text('IP_map'),
       ),
       body: Center(
         child: Column(
