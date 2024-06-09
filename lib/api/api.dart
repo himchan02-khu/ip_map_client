@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../models/IP_Info.dart'; // IpInfo 클래스 파일 경로를 import합니다.
+import '../models/IP_Info.dart';
 
 class ApiHelper {
   static Future<IpInfo> sendIP(String ip) async {

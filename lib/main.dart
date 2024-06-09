@@ -3,7 +3,7 @@ import 'package:ip_map_instance/models/IP_Info.dart';
 import 'screen/One_IP/IP_Display.dart';
 import 'screen/One_IP/My_IP.dart';
 import 'screen/Two_IP/Input_two.dart';
-import 'api/api.dart'; // Import the ApiHelper class
+import 'api/api.dart';
 
 void main() {
   runApp(const MyApp());
