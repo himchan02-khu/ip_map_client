@@ -168,14 +168,14 @@ String time;	// 시간 시준 (ex: Asia/Seoul)
 jsonCopy code
 [
   {
-    "ip": '1.1.1.1',
-    "city": 'Englewood',
-    "region": 'Colorado',
-    "country": 'US',
-    "locate": '39.6123,-104.8799',
-    "telecom": 'AS13335 Cloudflare, Inc.',
-    "postal": '80111',
-    "time": 'America/Denver'
+    "ip": "1.1.1.1",
+    "city": "Englewood",
+    "region": "Colorado",
+    "country": "US",
+    "locate": "39.6123,-104.8799",
+    "telecom": "AS13335 Cloudflare, Inc.",
+    "postal": "80111',
+    "time": "America/Denver"
   }
 ]
 
